@@ -34,20 +34,15 @@ def test_read_sequences_mocked(mocker):
     # Mock file open
     mock_open = mocker.patch('builtins.open', mocker.mock_open())
 
-    # Mock SeqIO.parse to return a list of SeqRecord objects
+    # Mock SeqIO.parse to return an iterator of SeqRecords
     mock_parse = mocker.patch('Bio.SeqIO.parse')
     mock_record1 = SeqRecord(Seq("ATGC"), id="seq1")
     mock_record2 = SeqRecord(Seq("CGTA"), id="seq2")
-
-    # Configure the mock to return an iterator of mock records
     mock_parse.return_value = iter([mock_record1, mock_record2])
 
-    # Call the function
     file_path = "dummy.fasta"
     result = read_sequences_from_file(file_path)
 
-    # Assertions
-    # Expect list of SeqRecord objects. Check sequence strings.
     assert result == [mock_record1, mock_record2]
 
     # Verify open was called
@@ -57,13 +52,13 @@ def test_read_sequences_mocked(mocker):
     mock_parse.assert_called_once_with(mock_open.return_value, "fasta-pearson")
 
 def test_read_sequences_generic_exception(mocker):
+    # Mock file open
     mock_open = mocker.patch('builtins.open')
+
     # Configure the mock to raise a generic Exception
     mock_open.side_effect = Exception("Generic error")
 
-    # Call the function
     result = read_sequences_from_file("dummy.fasta")
 
-    # Assertions
     assert result == []
 
