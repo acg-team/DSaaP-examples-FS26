@@ -10,8 +10,8 @@ To run this little project you need Python3 installed on your machine.
 git clone git@github.com:acg-team/DSaaP-examples-FS26.git
 cd DSaaP-examples-FS26/5_testing/unit_test_example_1
 
-python3 -m venv gccontent
-source gccontent/bin/activate
+python3 -m venv gcc_venv
+source gcc_venv/bin/activate
 pip install -r requirements.txt
 ```
 
@@ -20,7 +20,7 @@ pip install -r requirements.txt
 To run the script, make sure to setup and activate the environment first:
 
 ```zsh
-source gccontent/bin/activate
+source gcc_venv/bin/activate
 ```
 
 To run the script on a fasta file of your choosing:
@@ -42,15 +42,20 @@ The output of the script will be the GC contents for each sequence in the fasta 
 To run unit tests:
 
 ```zsh
-python -m unittest
+pytest test
 ```
 
 ### Test Coverage
 
 To run unit tests with coverage and generate an html report, run:
 ```zsh
-coverage run -m unittest
+coverage run -m pytest
 coverage html
+```
+
+To view the coverage report in your browser you can run:
+```zsh
+open htmlcov/index.html
 ```
 
 ## Data
