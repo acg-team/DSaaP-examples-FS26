@@ -1,0 +1,5 @@
+biopython==1.86
+coverage==7.13.5
+numpy==2.4.3
+pytest
+pytest-mock
