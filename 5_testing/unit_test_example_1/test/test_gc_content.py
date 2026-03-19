@@ -4,7 +4,7 @@ from Bio.SeqRecord import SeqRecord
 from gc_content.gc_content import calculate_gc_content
 
 def test_empty_sequence():
-    # Edge case: empty string
+    # Edge case: empty sequence
     record = SeqRecord(Seq(""), id="seq1")
     assert calculate_gc_content(record) == 0.0
 
@@ -39,8 +39,7 @@ def test_mixed_case():
     assert calculate_gc_content(record) == pytest.approx(0.5)
 
 def test_strong_nucleotides():
-    # Case insensitivity check
-    # 'S' is considered as G or C, so 5/9 = 0.555...
+    # 'S' is considered as G or C, so GC content should be 5/9 = 0.555...
     record = SeqRecord(Seq("AATTGGCCS"), id="seq8")
     assert calculate_gc_content(record) == pytest.approx(5/9)
 
