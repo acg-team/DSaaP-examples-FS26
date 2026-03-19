@@ -9,12 +9,12 @@ def test_read_sequences_file_not_found():
 
 def test_read_sequences_non_fasta():
     # Test that the function returns an empty list when the file is not a FASTA file
-    result = read_sequences_from_file("data/non_fasta.phy")
+    result = read_sequences_from_file("test/data/non_fasta.phy")
     assert result == []
 
 def test_read_sequences_empty_file():
     # Test that the function returns an empty list when the file is empty
-    result = read_sequences_from_file("data/empty.fasta")
+    result = read_sequences_from_file("test/data/empty.fasta")
     assert result == []
 
 def test_read_sequences_mocked(mocker):
