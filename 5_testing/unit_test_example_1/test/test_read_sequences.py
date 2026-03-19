@@ -17,6 +17,19 @@ def test_read_sequences_empty_file():
     result = read_sequences_from_file("test/data/empty.fasta")
     assert result == []
 
+def test_read_sequences_valid():
+    # Function returns a list of SeqRecord objects when the file is valid
+    result = read_sequences_from_file("test/data/DNA_short.fasta")
+    assert len(result) == 4
+    assert result[0].id == "A"
+    assert str(result[0].seq) == "CTGTTCA"
+    assert result[1].id == "B"
+    assert str(result[1].seq) == "CTGTT"
+    assert result[2].id == "C"
+    assert str(result[2].seq) == "CTCTT"
+    assert result[3].id == "D"
+    assert str(result[3].seq) == "GTCTA"
+
 def test_read_sequences_mocked(mocker):
     # Mock file open
     mock_open = mocker.patch('builtins.open', mocker.mock_open())
