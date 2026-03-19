@@ -3,30 +3,30 @@ from Bio.SeqRecord import SeqRecord
 from gc_content.gc_content import read_sequences_from_file
 
 def test_read_sequences_file_not_found():
-    # Test that the function returns an empty list when the file is not found
+    # Function returns an empty list when the file is not found
     result = read_sequences_from_file("non_existent_file.fasta")
     assert result == []
 
 def test_read_sequences_non_fasta():
-    # Test that the function returns an empty list when the file is not a FASTA file
+    # Function returns an empty list when the file is not a FASTA file
     result = read_sequences_from_file("test/data/non_fasta.phy")
     assert result == []
 
 def test_read_sequences_empty_file():
-    # Test that the function returns an empty list when the file is empty
+    # Function returns an empty list when the file is empty
     result = read_sequences_from_file("test/data/empty.fasta")
     assert result == []
 
 def test_read_sequences_mocked(mocker):
+    # Mock file open
     mock_open = mocker.patch('builtins.open', mocker.mock_open())
-    mock_parse = mocker.patch('Bio.SeqIO.parse')
 
-    # Prepare mock data
-    # SeqIO.parse yields SeqRecord objects
+    # Mock SeqIO.parse to return a list of SeqRecord objects
+    mock_parse = mocker.patch('Bio.SeqIO.parse')
     mock_record1 = SeqRecord(Seq("ATGC"), id="seq1")
     mock_record2 = SeqRecord(Seq("CGTA"), id="seq2")
 
-    # Configure the mock to return an iterator of our mock records
+    # Configure the mock to return an iterator of mock records
     mock_parse.return_value = iter([mock_record1, mock_record2])
 
     # Call the function
