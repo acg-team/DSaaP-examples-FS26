@@ -35,7 +35,7 @@ def test_read_sequences_mocked(mocker):
 
     # Assertions
     # Expect list of SeqRecord objects. Check sequence strings.
-    assert [str(r.seq) for r in result] == ["ATGC", "CGTA"]
+    assert result == [mock_record1, mock_record2]
 
     # Verify open was called
     mock_open.assert_called_once_with(file_path, "r")
