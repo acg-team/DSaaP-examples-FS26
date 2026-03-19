@@ -34,9 +34,9 @@ def test_only_c():
     assert calculate_gc_content(record) == pytest.approx(0.5)
 
 def test_mixed_case():
-    # 4/8 = 0.5
-    record = SeqRecord(Seq("atgcATGC"), id="seq7")
-    assert calculate_gc_content(record) == pytest.approx(0.5)
+    # 6/10 = 0.6 GC content, case insensitivity check
+    record = SeqRecord(Seq("atgcGGGCAT"), id="seq7")
+    assert calculate_gc_content(record) == pytest.approx(0.6)
 
 def test_strong_nucleotides():
     # 'S' is considered as G or C, so GC content should be 5/9 = 0.555...
