@@ -4,18 +4,25 @@ This directory contains a series of examples demonstrating the progression from 
 
 ## Setup
 
-To run these examples, you need Python 3 installed. It is recommended to use a virtual environment.
+To run these examples, you need Python 3 installed and a clone of the [DSaaP examples repository]( https://github.com/acg-team/DSaaP-examples-FS26 ).
+
+You can use a virtual environment to install dependencies:
 
 ```zsh
 # Clone the repository if you haven't already
-# git clone git@github.com:acg-team/DSaaP-examples-FS26.git
-# cd DSaaP-examples-FS26/5_testing/why_test
+git clone git@github.com:acg-team/DSaaP-examples-FS26.git
+cd DSaaP-examples-FS26/5_testing/why_unit_test
 
 # Create and activate virtual environment
 python3 -m venv test_venv
 source test_venv/bin/activate
 
-# Install dependencies (pytest)
+# Install dependencies (pytest, pytest-mock)
+pip install -r requirements.txt
+```
+
+Alternatively, you can install the dependencies system-wide:
+```zsh
 pip install -r requirements.txt
 ```
 
