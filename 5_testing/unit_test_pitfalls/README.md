@@ -2,30 +2,6 @@
 
 This directory demonstrates common anti-patterns in unit testing and how to fix them.
 
-## Setup
-
-To run these examples, you need Python 3 installed and a clone of the [DSaaP examples repository]( https://github.com/acg-team/DSaaP-examples-FS26 ).
-
-You can use a virtual environment to install dependencies:
-
-```zsh
-# Clone the repository if you haven't already
-# git clone git@github.com:acg-team/DSaaP-examples-FS26.git
-# cd DSaaP-examples-FS26/5_testing/unit_test_pitfalls
-
-# Create and activate virtual environment
-python3 -m venv test_venv
-source test_venv/bin/activate
-
-# Install dependencies (pytest, pytest-mock)
-pip install -r requirements.txt
-```
-
-Alternatively, you can install the dependencies system-wide:
-```zsh
-pip install -r requirements.txt
-```
-
 ## Pitfalls & Fixes
 
 ### 1. Assertion Too Strict ([`assertion_too_strict.py`](https://github.com/acg-team/DSaaP-examples-FS26/blob/main/5_testing/unit_test_pitfalls/assertion_too_strict.py))
@@ -57,6 +33,30 @@ Tests that rely on external environment state (like `datetime.now()`) are flaky.
 Mocking is a powerful tool to remove external dependencies, but it's easy to overdo. The previous example could be fixed using mocks (see [`environment_dependency_fix_with_mock.py`](https://github.com/acg-team/DSaaP-examples-FS26/blob/main/5_testing/unit_test_pitfalls/environment_dependency_fix_with_mock.py)), but is that really necessary? Simple dependency injection is often cleaner and less brittle.
 
 **Fix**: Pass the dependency as a parameter (dependency injection). See [`environment_dependency_fixed.py`](https://github.com/acg-team/DSaaP-examples-FS26/blob/main/5_testing/unit_test_pitfalls/environment_dependency_fixed.py).
+
+## Setup
+
+To run these examples, you need Python 3 installed and a clone of the [DSaaP examples repository]( https://github.com/acg-team/DSaaP-examples-FS26 ).
+
+You can use a virtual environment to install dependencies:
+
+```zsh
+# Clone the repository if you haven't already
+# git clone git@github.com:acg-team/DSaaP-examples-FS26.git
+# cd DSaaP-examples-FS26/5_testing/unit_test_pitfalls
+
+# Create and activate virtual environment
+python3 -m venv test_venv
+source test_venv/bin/activate
+
+# Install dependencies (pytest, pytest-mock)
+pip install -r requirements.txt
+```
+
+Alternatively, you can install the dependencies system-wide:
+```zsh
+pip install -r requirements.txt
+```
 
 ## Running the Examples
 

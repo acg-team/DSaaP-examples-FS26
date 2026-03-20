@@ -11,7 +11,7 @@ You can use a virtual environment to install dependencies:
 ```zsh
 # Clone the repository if you haven't already
 # git clone git@github.com:acg-team/DSaaP-examples-FS26.git
-# cd DSaaP-examples-FS26/5_testing/unit_test_example
+# cd DSaaP-examples-FS26/5_testing/unit_test_example_full_coverage_mutant
 
 # Create and activate virtual environment
 python3 -m venv gcc_venv
