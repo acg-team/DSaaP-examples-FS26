@@ -4,24 +4,29 @@ This is a basic Python script to calculate GC content from sequences in a fasta 
 
 ## Setup
 
-To run this little project you need Python3 installed on your machine.
+To run these examples, you need Python 3 installed and a clone of the [DSaaP examples repository]( https://github.com/acg-team/DSaaP-examples-FS26 ).
+
+You can use a virtual environment to install dependencies:
 
 ```zsh
-git clone git@github.com:acg-team/DSaaP-examples-FS26.git
-cd DSaaP-examples-FS26/5_testing/unit_test_example_1
+# Clone the repository if you haven't already
+# git clone git@github.com:acg-team/DSaaP-examples-FS26.git
+# cd DSaaP-examples-FS26/5_testing/unit_test_example
 
+# Create and activate virtual environment
 python3 -m venv gcc_venv
 source gcc_venv/bin/activate
+
+# Install dependencies (biopython, coverage, pytest, pytest-mock)
+pip install -r requirements.txt
+```
+
+Alternatively, you can install the dependencies system-wide:
+```zsh
 pip install -r requirements.txt
 ```
 
 ## Running the Script
-
-To run the script, make sure to setup and activate the environment first:
-
-```zsh
-source gcc_venv/bin/activate
-```
 
 To run the script on a fasta file of your choosing:
 
