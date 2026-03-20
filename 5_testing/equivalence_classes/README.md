@@ -14,6 +14,9 @@ The `discount_test.py` script defines a function `discounted_price(price, percen
     *   Discount is 0%.
     *   Discount is > 100%.
     *   Discount is negative.
+4.  **Invalid Inputs**:
+    *   Price/discount is non-numeric.
+    *   Price/discount is numeric, but of the wrong type.
 
 ## Setup
 

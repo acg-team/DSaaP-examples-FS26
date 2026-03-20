@@ -44,10 +44,18 @@ def test_discount_percentage_below_zero():
     # assert discounted_price(100, -20) == pytest.approx(100.0)
 
 # Equivalence class 7: invalid input types
-def test_invalid_input_price():
+def test_invalid_input_price_non_numeric():
+    with pytest.raises(TypeError):
+        discounted_price("a", 20)
+
+def test_invalid_input_price_string():
     with pytest.raises(TypeError):
         discounted_price("100", 20)
 
-def test_invalid_input_percentage():
+def test_invalid_input_percentage_non_numeric():
+    with pytest.raises(TypeError):
+        discounted_price(100, "b")
+
+def test_invalid_input_percentage_string():
     with pytest.raises(TypeError):
         discounted_price(100, "20")
