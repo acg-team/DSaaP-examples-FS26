@@ -20,14 +20,25 @@ The `discount_test.py` script defines a function `discounted_price(price, percen
 
 ## Setup
 
-To run these examples, you need Python 3 installed. It is recommended to use a virtual environment.
+To run these examples, you need Python 3 installed and a clone of the [DSaaP examples repository]( https://github.com/acg-team/DSaaP-examples-FS26 ).
+
+You can use a virtual environment to install dependencies:
 
 ```zsh
+# Clone the repository if you haven't already
+# git clone git@github.com:acg-team/DSaaP-examples-FS26.git
+# cd DSaaP-examples-FS26/5_testing/equivalence_classes
+
 # Create and activate virtual environment
 python3 -m venv test_venv
 source test_venv/bin/activate
 
-# Install dependencies
+# Install dependencies (pytest, pytest-mock)
+pip install -r requirements.txt
+```
+
+Alternatively, you can install the dependencies system-wide:
+```zsh
 pip install -r requirements.txt
 ```
 
