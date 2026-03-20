@@ -1,6 +1,6 @@
 import pytest
 
-def discounted_price(price: float, percentage: float) -> float:
+def discounted_price(price, percentage):
     return max(0, price - price * percentage / 100)
 
 # Equivalence class 1: basic functionality
@@ -43,3 +43,11 @@ def test_discount_percentage_below_zero():
     assert discounted_price(100, -20) == pytest.approx(120.0)
     # assert discounted_price(100, -20) == pytest.approx(100.0)
 
+# Equivalence class 7: invalid input types
+def test_invalid_input_price():
+    with pytest.raises(TypeError):
+        discounted_price("100", 20)
+
+def test_invalid_input_percentage():
+    with pytest.raises(TypeError):
+        discounted_price(100, "20")
