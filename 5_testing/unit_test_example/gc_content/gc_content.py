@@ -21,6 +21,11 @@ def calculate_gc_content(record: SeqRecord) -> float:
     Returns:
         float: The fraction of G and C bases in the sequence (0.0 to 1.0).
         0.0 if the sequence is empty.
+
+    Example:
+    >>> from Bio.SeqRecord import SeqRecord, Seq
+    >>> calculate_gc_content(SeqRecord(Seq("AGCTASSTTA")))
+    0.4
     """
     if not record.seq:
         return 0.0
