@@ -9,6 +9,7 @@ The repository layout is as follows:
 ```
 1_languages/     examples from the languages lecture;
 2_clean_code/    examples from the clean code lecture;
+5_testing/       examples from the testing lecture;
 projects/        example files for the project repositories.
 ```
 
