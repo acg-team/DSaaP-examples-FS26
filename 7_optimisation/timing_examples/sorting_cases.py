@@ -20,11 +20,11 @@ def bubble_sort(arr: list[int]) -> list[int]:
             break
     return arr
     # Worst case (reverse-sorted): O(n^2)
-    # For 10000: 4.247439026832581 seconds
+    # For 10000: ~7.2 seconds
     # Average case (random): O(n^2)
-    # For 10000: 4.824762296676636 seconds
+    # For 10000: ~6.42 seconds
     # Best case (already sorted): O(n)
-    # For 10000: 2.5253278017044067 seconds
+    # For 10000: ~0.00072 seconds
 
 def compare_sorts():
     size = 10000
