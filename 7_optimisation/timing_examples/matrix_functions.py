@@ -33,7 +33,7 @@ def do_numpy_math(value: np.float64) -> np.float64:
     return np.log((value / np.float64(2.0)) + np.float64(1.0))
 
 
-def do_numpy_math_row_column(matrix: list[list[np.float64]]):
+def do_numpy_math_row_major(matrix: list[list[np.float64]]):
     """
     Applies the do_numpy_math function to each element of the given matrix in place,
     iterating row by row and column by column.
@@ -92,7 +92,7 @@ def compare_matrix_operations():
 
     print("\nComparing math operations with and without numpy:")
     report_performance(runs, do_math_row_major, [[float(i) for i in range(1, size)] for _ in range(size)])
-    report_performance(runs, do_numpy_math_row_column, [[np.float64(i) for i in range(1, size)] for _ in range(size)])
+    report_performance(runs, do_numpy_math_row_major, [[np.float64(i) for i in range(1, size)] for _ in range(size)])
 
 
 if __name__ == "__main__":
