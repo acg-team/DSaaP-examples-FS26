@@ -11,7 +11,7 @@ authors = [{ name = "Jūlija Pečerska", email = "julija.pecerska@zhaw.ch" }]
 requires-python = ">=3.10"
 license = "MIT"
 license-files = ["LICENSE"]
-dependencies = ["numpy==2.4.4"]
+dependencies = ["numpy==2.2.6"]
 
 [project.optional-dependencies]
 dev = ["black==26.3.1", "pylint==4.0.5"]

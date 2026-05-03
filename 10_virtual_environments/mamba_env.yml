@@ -20,6 +20,6 @@ dependencies:
   - tzdata=2025c=hc9c84f9_1
   - wheel=0.47.0=pyhd8ed1ab_0
   - pip:
-    - numpy==2.4.4
+    - numpy==2.2.6
 
 prefix: "/Users/pece/.local/share/mamba/envs/demo_mamba_env"
