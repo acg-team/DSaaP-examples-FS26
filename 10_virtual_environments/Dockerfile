@@ -9,7 +9,7 @@ WORKDIR /app
 COPY pyproject.toml .
 COPY src/ src/
 
-RUN pip install --no-cache-dir numpy==2.2.6 && \
-    pip install --no-cache-dir .
+RUN pip install --no-cache-dir .
 
-CMD ["python", "src/analysis.py"]
+ENTRYPOINT ["python", "src/analysis.py"]
+CMD []
