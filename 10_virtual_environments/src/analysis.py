@@ -1,3 +1,4 @@
+import argparse
 import subprocess
 import numpy as np
 
@@ -33,5 +34,11 @@ def use_blastn():
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--text", default="Hello, world!", help="Text to print")
+    args = parser.parse_args()
+
+    print(args.text)
+
     use_numpy()
     use_blastn()
