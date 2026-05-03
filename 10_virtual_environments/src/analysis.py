@@ -1,37 +1,37 @@
-from lxml import etree
+import subprocess
+import numpy as np
 
 
-def main():
-    xml_data = b"""
-    <root>
-        <gene id="BRCA1"/>
-        <gene id="TP53"/>
-    </root>
+def divide_by_two_numpy(matrix: np.ndarray):
     """
-
-    xslt_data = b"""
-    <xsl:stylesheet version="1.0"
-        xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-
-        <xsl:template match="/">
-            <genes>
-                <xsl:for-each select="root/gene">
-                    <gene>
-                        <xsl:value-of select="@id"/>
-                    </gene>
-                </xsl:for-each>
-            </genes>
-        </xsl:template>
-    </xsl:stylesheet>
+    Divides each element of the given matrix by 2 in place using numpy
     """
+    matrix /= 2.0
 
-    xml = etree.XML(xml_data)
-    xslt = etree.XML(xslt_data)
-    transform = etree.XSLT(xslt)
 
-    result = transform(xml)
-    print(str(result))
+def use_numpy():
+    print(f"Dividing a matrix by 2 using numpy version {np.__version__}.")
+    size = 5000
+    divide_by_two_numpy(
+        np.array([[float(i) for i in range(1, size)] for _ in range(size)])
+    )
+    print("Done.")
+
+
+def use_blastn():
+    cmd = ["blastn", "-version"]
+
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        print(result.stdout.splitlines()[0])
+    except FileNotFoundError:
+        print("ERROR: blastn is not installed on this system")
+    except subprocess.CalledProcessError as e:
+        print("blastn failed:", e)
+
+    print("Done.")
 
 
 if __name__ == "__main__":
-    main()
+    use_numpy()
+    use_blastn()
