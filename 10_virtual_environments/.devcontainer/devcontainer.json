@@ -1,0 +1,23 @@
+{
+    "name": "virtual-environments-DSaaP-FS26",
+    "build": {
+        "dockerfile": "../Dockerfile"
+    },
+    "postCreateCommand": "pip install --no-cache-dir '.[dev,test]'",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.pylint",
+                "ms-python.black-formatter"
+            ],
+            "settings": {
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "[python]": {
+                    "editor.defaultFormatter": "ms-python.black-formatter",
+                    "editor.formatOnSave": true
+                }
+            }
+        }
+    }
+}

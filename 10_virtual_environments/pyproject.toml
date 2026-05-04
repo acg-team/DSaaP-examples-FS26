@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "virtual-environments-DSaaP-FS26"
+version = "0.0.1"
+description = "Virtual environments example from the ICLS@ZHAW Developing Software as a Product (DSaaP) course, FS26."
+readme = "README.md"
+authors = [{ name = "Jūlija Pečerska", email = "julija.pecerska@zhaw.ch" }]
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+dependencies = ["numpy==2.2.6"]
+
+[project.optional-dependencies]
+dev = ["black==26.3.1", "pylint==4.0.5"]
+
+test = ["pytest==9.0.3"]
+
+[project.scripts]
+gc-content = "analysis:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
