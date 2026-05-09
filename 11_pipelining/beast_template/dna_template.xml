@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate='Standard' beautistatus='' namespace="beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood" required="" version="2.6">
+
+
+<data
+id="msaID"
+spec="Alignment"
+name="alignment">
+
+</data>
+
+
+<map name="Uniform" >beast.math.distributions.Uniform</map>
+<map name="Exponential" >beast.math.distributions.Exponential</map>
+<map name="LogNormal" >beast.math.distributions.LogNormalDistributionModel</map>
+<map name="Normal" >beast.math.distributions.Normal</map>
+<map name="Beta" >beast.math.distributions.Beta</map>
+<map name="Gamma" >beast.math.distributions.Gamma</map>
+<map name="LaplaceDistribution" >beast.math.distributions.LaplaceDistribution</map>
+<map name="prior" >beast.math.distributions.Prior</map>
+<map name="InverseGamma" >beast.math.distributions.InverseGamma</map>
+<map name="OneOnX" >beast.math.distributions.OneOnX</map>
+
+
+<run id="mcmc" spec="MCMC" chainLength="50000">
+    <state id="state" spec="State" storeEvery="5000">
+        <tree id="Tree.t:msaID" spec="beast.evolution.tree.Tree" name="stateNode">
+            <taxonset id="TaxonSet.msaID" spec="TaxonSet">
+                <alignment idref="msaID"/>
+            </taxonset>
+        </tree>
+        <parameter id="freqParameter.s:msaID" spec="parameter.RealParameter" dimension="4" lower="0.0" name="stateNode" upper="1.0">0.25</parameter>
+        <parameter id="rateAC.s:msaID" spec="parameter.RealParameter" lower="0.0" name="stateNode">1.0</parameter>
+        <parameter id="rateAG.s:msaID" spec="parameter.RealParameter" lower="0.0" name="stateNode">1.0</parameter>
+        <parameter id="rateAT.s:msaID" spec="parameter.RealParameter" lower="0.0" name="stateNode">1.0</parameter>
+        <parameter id="rateCG.s:msaID" spec="parameter.RealParameter" lower="0.0" name="stateNode">1.0</parameter>
+        <parameter id="rateGT.s:msaID" spec="parameter.RealParameter" lower="0.0" name="stateNode">1.0</parameter>
+        <parameter id="proportionInvariant.s:msaID" spec="parameter.RealParameter" lower="0.0" name="stateNode" upper="1.0">0.1</parameter>
+        <parameter id="gammaShape.s:msaID" spec="parameter.RealParameter" name="stateNode">1.0</parameter>
+        <parameter id="BDBirthRate.t:msaID" spec="parameter.RealParameter" lower="0.0" name="stateNode" upper="10000.0">1.0</parameter>
+        <parameter id="BDDeathRate.t:msaID" spec="parameter.RealParameter" lower="0.0" name="stateNode" upper="1.0">0.5</parameter>
+    </state>
+
+    <init id="RandomTree.t:msaID" spec="beast.evolution.tree.RandomTree" estimate="false" initial="@Tree.t:msaID" taxa="@msaID">
+        <populationModel id="ConstantPopulation0.t:msaID" spec="ConstantPopulation">
+            <parameter id="randomPopSize.t:msaID" spec="parameter.RealParameter" name="popSize">1.0</parameter>
+        </populationModel>
+    </init>
+
+    <distribution id="posterior" spec="util.CompoundDistribution">
+        <distribution id="prior" spec="util.CompoundDistribution">
+            <distribution id="BirthDeath.t:msaID" spec="beast.evolution.speciation.BirthDeathGernhard08Model" birthDiffRate="@BDBirthRate.t:msaID" relativeDeathRate="@BDDeathRate.t:msaID" tree="@Tree.t:msaID"/>
+            <prior id="BirthRatePrior.t:msaID" name="distribution" x="@BDBirthRate.t:msaID">
+                <Uniform id="Uniform.4" name="distr" upper="1000.0"/>
+            </prior>
+            <prior id="DeathRatePrior.t:msaID" name="distribution" x="@BDDeathRate.t:msaID">
+                <Uniform id="Uniform.5" name="distr"/>
+            </prior>
+            <prior id="FrequenciesPrior.s:msaID" name="distribution" x="@freqParameter.s:msaID">
+                <Uniform id="Uniform.3" name="distr"/>
+            </prior>
+            <prior id="GammaShapePrior.s:msaID" name="distribution" x="@gammaShape.s:msaID">
+                <Exponential id="Exponential.0" name="distr">
+                    <parameter id="RealParameter.0" spec="parameter.RealParameter" estimate="false" name="mean">1.0</parameter>
+                </Exponential>
+            </prior>
+            <prior id="PropInvariantPrior.s:msaID" name="distribution" x="@proportionInvariant.s:msaID">
+                <Uniform id="Uniform.2" name="distr"/>
+            </prior>
+            <prior id="RateACPrior.s:msaID" name="distribution" x="@rateAC.s:msaID">
+                <Gamma id="Gamma.0" name="distr">
+                    <parameter id="RealParameter.1" spec="parameter.RealParameter" estimate="false" name="alpha">0.05</parameter>
+                    <parameter id="RealParameter.2" spec="parameter.RealParameter" estimate="false" name="beta">10.0</parameter>
+                </Gamma>
+            </prior>
+            <prior id="RateAGPrior.s:msaID" name="distribution" x="@rateAG.s:msaID">
+                <Gamma id="Gamma.1" name="distr">
+                    <parameter id="RealParameter.3" spec="parameter.RealParameter" estimate="false" name="alpha">0.05</parameter>
+                    <parameter id="RealParameter.4" spec="parameter.RealParameter" estimate="false" name="beta">20.0</parameter>
+                </Gamma>
+            </prior>
+            <prior id="RateATPrior.s:msaID" name="distribution" x="@rateAT.s:msaID">
+                <Gamma id="Gamma.2" name="distr">
+                    <parameter id="RealParameter.5" spec="parameter.RealParameter" estimate="false" name="alpha">0.05</parameter>
+                    <parameter id="RealParameter.6" spec="parameter.RealParameter" estimate="false" name="beta">10.0</parameter>
+                </Gamma>
+            </prior>
+            <prior id="RateCGPrior.s:msaID" name="distribution" x="@rateCG.s:msaID">
+                <Gamma id="Gamma.3" name="distr">
+                    <parameter id="RealParameter.7" spec="parameter.RealParameter" estimate="false" name="alpha">0.05</parameter>
+                    <parameter id="RealParameter.8" spec="parameter.RealParameter" estimate="false" name="beta">10.0</parameter>
+                </Gamma>
+            </prior>
+            <prior id="RateGTPrior.s:msaID" name="distribution" x="@rateGT.s:msaID">
+                <Gamma id="Gamma.5" name="distr">
+                    <parameter id="RealParameter.11" spec="parameter.RealParameter" estimate="false" name="alpha">0.05</parameter>
+                    <parameter id="RealParameter.12" spec="parameter.RealParameter" estimate="false" name="beta">10.0</parameter>
+                </Gamma>
+            </prior>
+        </distribution>
+        <distribution id="likelihood" spec="util.CompoundDistribution" useThreads="true">
+            <distribution id="treeLikelihood.msaID" spec="ThreadedTreeLikelihood" data="@msaID" tree="@Tree.t:msaID">
+                <siteModel id="SiteModel.s:msaID" spec="SiteModel" gammaCategoryCount="5" proportionInvariant="@proportionInvariant.s:msaID" shape="@gammaShape.s:msaID">
+                    <parameter id="mutationRate.s:msaID" spec="parameter.RealParameter" estimate="false" name="mutationRate">1.0</parameter>
+                    <substModel id="gtr.s:msaID" spec="GTR" rateAC="@rateAC.s:msaID" rateAG="@rateAG.s:msaID" rateAT="@rateAT.s:msaID" rateCG="@rateCG.s:msaID" rateGT="@rateGT.s:msaID">
+                        <parameter id="rateCT.s:msaID" spec="parameter.RealParameter" estimate="false" lower="0.0" name="rateCT">1.0</parameter>
+                        <frequencies id="estimatedFreqs.s:msaID" spec="Frequencies" frequencies="@freqParameter.s:msaID"/>
+                    </substModel>
+                </siteModel>
+                <branchRateModel id="StrictClock.c:msaID" spec="beast.evolution.branchratemodel.StrictClockModel">
+                    <parameter id="clockRate.c:msaID" spec="parameter.RealParameter" estimate="false" name="clock.rate">1.0</parameter>
+                </branchRateModel>
+            </distribution>
+        </distribution>
+    </distribution>
+
+    <operator id="FrequenciesExchanger.s:msaID" spec="DeltaExchangeOperator" delta="0.01" weight="0.1">
+        <parameter idref="freqParameter.s:msaID"/>
+    </operator>
+
+    <operator id="RateACScaler.s:msaID" spec="ScaleOperator" parameter="@rateAC.s:msaID" scaleFactor="0.5" weight="0.1"/>
+
+    <operator id="RateAGScaler.s:msaID" spec="ScaleOperator" parameter="@rateAG.s:msaID" scaleFactor="0.5" weight="0.1"/>
+
+    <operator id="RateATScaler.s:msaID" spec="ScaleOperator" parameter="@rateAT.s:msaID" scaleFactor="0.5" weight="0.1"/>
+
+    <operator id="RateCGScaler.s:msaID" spec="ScaleOperator" parameter="@rateCG.s:msaID" scaleFactor="0.5" weight="0.1"/>
+
+    <operator id="RateGTScaler.s:msaID" spec="ScaleOperator" parameter="@rateGT.s:msaID" scaleFactor="0.5" weight="0.1"/>
+
+    <operator id="proportionInvariantScaler.s:msaID" spec="ScaleOperator" parameter="@proportionInvariant.s:msaID" scaleFactor="0.5" weight="0.1"/>
+
+    <operator id="gammaShapeScaler.s:msaID" spec="ScaleOperator" parameter="@gammaShape.s:msaID" scaleFactor="0.5" weight="0.1"/>
+
+    <operator id="BirthDeathTreeScaler.t:msaID" spec="ScaleOperator" scaleFactor="0.5" tree="@Tree.t:msaID" weight="3.0"/>
+
+    <operator id="BirthDeathTreeRootScaler.t:msaID" spec="ScaleOperator" rootOnly="true" scaleFactor="0.5" tree="@Tree.t:msaID" weight="3.0"/>
+
+    <operator id="BirthDeathUniformOperator.t:msaID" spec="Uniform" tree="@Tree.t:msaID" weight="30.0"/>
+
+    <operator id="BirthDeathSubtreeSlide.t:msaID" spec="SubtreeSlide" tree="@Tree.t:msaID" weight="15.0"/>
+
+    <operator id="BirthDeathNarrow.t:msaID" spec="Exchange" tree="@Tree.t:msaID" weight="15.0"/>
+
+    <operator id="BirthDeathWide.t:msaID" spec="Exchange" isNarrow="false" tree="@Tree.t:msaID" weight="3.0"/>
+
+    <operator id="BirthDeathWilsonBalding.t:msaID" spec="WilsonBalding" tree="@Tree.t:msaID" weight="3.0"/>
+
+    <operator id="BirthRateScaler.t:msaID" spec="ScaleOperator" parameter="@BDBirthRate.t:msaID" weight="3.0"/>
+
+    <operator id="DeathRateScaler.t:msaID" spec="ScaleOperator" parameter="@BDDeathRate.t:msaID" weight="3.0"/>
+
+    <logger id="tracelog" spec="Logger" fileName="msaID.log" logEvery="1000" model="@posterior" sanitiseHeaders="true" sort="smart">
+        <log idref="posterior"/>
+        <log idref="likelihood"/>
+        <log idref="prior"/>
+        <log idref="treeLikelihood.msaID"/>
+        <log id="TreeHeight.t:msaID" spec="beast.evolution.tree.TreeHeightLogger" tree="@Tree.t:msaID"/>
+        <log idref="freqParameter.s:msaID"/>
+        <log idref="rateAC.s:msaID"/>
+        <log idref="rateAG.s:msaID"/>
+        <log idref="rateAT.s:msaID"/>
+        <log idref="rateCG.s:msaID"/>
+        <log idref="rateGT.s:msaID"/>
+        <log idref="proportionInvariant.s:msaID"/>
+        <log idref="gammaShape.s:msaID"/>
+        <log idref="BirthDeath.t:msaID"/>
+        <log idref="BDBirthRate.t:msaID"/>
+        <log idref="BDDeathRate.t:msaID"/>
+    </logger>
+
+    <logger id="screenlog" spec="Logger" logEvery="1000">
+        <log idref="posterior"/>
+        <log idref="likelihood"/>
+        <log idref="prior"/>
+    </logger>
+
+    <logger id="treelog.t:msaID" spec="Logger" fileName="$(tree).trees" logEvery="1000" mode="tree">
+        <log id="TreeWithMetaDataLogger.t:msaID" spec="beast.evolution.tree.TreeWithMetaDataLogger" tree="@Tree.t:msaID"/>
+    </logger>
+
+    <operatorschedule id="OperatorSchedule" spec="OperatorSchedule"/>
+
+</run>
+
+</beast>
