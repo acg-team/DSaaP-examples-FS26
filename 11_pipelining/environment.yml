@@ -1,4 +1,4 @@
-name: polyketide_analysis
+name: phylogenetics_demo
 channels:
   - conda-forge
   - bioconda

@@ -1,0 +1,168 @@
+from pathlib import Path
+import glob
+import os
+
+INPUT_GLOB = config.get("input", "data/*.fasta")
+OUTDIR = config.get("outdir", "snakemake_results")
+ENV_FILE = config.get("conda_env", "./.env")
+
+# Collect input FASTA files and ensure sample names are unique by stem.
+_input_files = sorted(glob.glob(INPUT_GLOB))
+if not _input_files:
+    raise ValueError(f"No input FASTA files matched: {INPUT_GLOB}")
+
+SOURCE_FILES = {}
+for fp in _input_files:
+    sample = Path(fp).stem
+    if sample in SOURCE_FILES:
+        raise ValueError(
+            f"Duplicate sample stem '{sample}' for files '{SOURCE_FILES[sample]}' and '{fp}'. "
+            "Please rename files to have unique basenames."
+        )
+    SOURCE_FILES[sample] = fp
+
+SAMPLES = sorted(SOURCE_FILES.keys())
+ALIGNERS = ["prank", "mafft"]
+
+
+def alignment_path(wildcards):
+    return f"{OUTDIR}/{wildcards.aligner}/{wildcards.sample}.clean.{wildcards.aligner}.fasta"
+
+
+rule all:
+    input:
+        expand(f"{OUTDIR}/cleaned_fasta/{{sample}}.clean.fasta", sample=SAMPLES),
+        expand(f"{OUTDIR}/prank/{{sample}}.clean.prank.fasta", sample=SAMPLES),
+        expand(f"{OUTDIR}/mafft/{{sample}}.clean.mafft.fasta", sample=SAMPLES),
+        expand(
+            f"{OUTDIR}/raxml/{{sample}}.clean.{{aligner}}.raxml.bestTree",
+            sample=SAMPLES,
+            aligner=ALIGNERS,
+        ),
+        expand(
+            f"{OUTDIR}/raxml/{{sample}}.clean.{{aligner}}.raxml.log",
+            sample=SAMPLES,
+            aligner=ALIGNERS,
+        ),
+        expand(
+            f"{OUTDIR}/beast_xml/{{sample}}.clean.{{aligner}}.xml",
+            sample=SAMPLES,
+            aligner=ALIGNERS,
+        ),
+        expand(
+            f"{OUTDIR}/beast/{{sample}}.clean.{{aligner}}.log",
+            sample=SAMPLES,
+            aligner=ALIGNERS,
+        ),
+        expand(
+            f"{OUTDIR}/beast/{{sample}}.clean.{{aligner}}.trees",
+            sample=SAMPLES,
+            aligner=ALIGNERS,
+        ),
+        expand(
+            f"{OUTDIR}/beast/{{sample}}.clean.{{aligner}}.xml.state",
+            sample=SAMPLES,
+            aligner=ALIGNERS,
+        )
+
+
+rule preprocess_fasta:
+    input:
+        lambda wildcards: SOURCE_FILES[wildcards.sample]
+    output:
+        f"{OUTDIR}/cleaned_fasta/{{sample}}.clean.fasta"
+    conda:
+        ENV_FILE
+    shell:
+        r"""
+        mkdir -p {OUTDIR}/cleaned_fasta
+        sed "s/\['//g; s/']//g" {input} > {output}
+        """
+
+
+rule align_prank:
+    input:
+        f"{OUTDIR}/cleaned_fasta/{{sample}}.clean.fasta"
+    output:
+        f"{OUTDIR}/prank/{{sample}}.clean.prank.fasta"
+    params:
+        prefix=lambda wc: f"{OUTDIR}/prank/{wc.sample}.clean.prank"
+    conda:
+        ENV_FILE
+    shell:
+        """
+        mkdir -p {OUTDIR}/prank
+        prank -d={input} -o={params.prefix} -F
+        mv {params.prefix}.best.fas {output}
+        """
+
+
+rule align_mafft:
+    input:
+        f"{OUTDIR}/cleaned_fasta/{{sample}}.clean.fasta"
+    output:
+        f"{OUTDIR}/mafft/{{sample}}.clean.mafft.fasta"
+    conda:
+        ENV_FILE
+    shell:
+        """
+        mkdir -p {OUTDIR}/mafft
+        mafft --auto {input} > {output}
+        """
+
+
+rule run_raxml_ng:
+    input:
+        alignment=alignment_path
+    output:
+        best_tree=f"{OUTDIR}/raxml/{{sample}}.clean.{{aligner}}.raxml.bestTree",
+        log=f"{OUTDIR}/raxml/{{sample}}.clean.{{aligner}}.raxml.log"
+    params:
+        model_args=lambda wc: (
+            "--model DNA"
+            if "DNA" in f"{wc.sample}.clean.{wc.aligner}.fasta"
+            else "--model AA --moose-options substitution-models=DCMut,JTT,JTT-DCMut,LG,PMB,Q.pfam,Q.yeast,VT,WAG,PROTGTR"
+        ),
+        prefix=lambda wc: f"{OUTDIR}/raxml/{wc.sample}.clean.{wc.aligner}"
+    conda:
+        ENV_FILE
+    shell:
+        """
+        mkdir -p {OUTDIR}/raxml
+        raxml-ng-2 --msa {input.alignment} {params.model_args} --opt-topology adaptive --prefix {params.prefix}
+        """
+
+
+rule generate_beast_xml:
+    input:
+        alignment=alignment_path
+    output:
+        xml=f"{OUTDIR}/beast_xml/{{sample}}.clean.{{aligner}}.xml"
+    conda:
+        ENV_FILE
+    shell:
+        """
+        mkdir -p {OUTDIR}/beast_xml
+        python scripts/beast_configuration.py --alignment {input.alignment} --output {output.xml}
+        """
+
+
+rule run_beast:
+    input:
+        xml=f"{OUTDIR}/beast_xml/{{sample}}.clean.{{aligner}}.xml"
+    output:
+        log=f"{OUTDIR}/beast/{{sample}}.clean.{{aligner}}.log",
+        trees=f"{OUTDIR}/beast/{{sample}}.clean.{{aligner}}.trees",
+        state=f"{OUTDIR}/beast/{{sample}}.clean.{{aligner}}.xml.state"
+    threads: 4
+    params:
+        outdir=lambda wc: f"{OUTDIR}/beast",
+        xml_abs=lambda wc, input: os.path.abspath(input.xml)
+    conda:
+        ENV_FILE
+    shell:
+        """
+        mkdir -p {params.outdir}
+        cd {params.outdir}
+        beast -threads {threads} -overwrite {params.xml_abs}
+        """
