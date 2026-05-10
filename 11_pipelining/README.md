@@ -17,15 +17,13 @@ The main workflow is [pipeline.nf](pipeline.nf). It:
 - conda or miniconda;
 - input FASTA files in [data](./data).
 
-## Project Setup With `conda`
+## Pipeline Setup With `conda`
 
-Create the Conda environment inside the project folder so both Nextflow and Snakemake can share it:
+Create the Conda environment inside the project folder so that both Nextflow and Snakemake can use it:
 
 ```bash
 conda env create -p .env -f environment.yml
 ```
-
-The environment is created in `.env/` and reused by both runners without any path customisation.
 
 ## Input Data
 
@@ -86,7 +84,6 @@ Expected behaviour:
 - BEAST runs once per generated XML file;
 - Nextflow writes execution reports under `results/pipeline_info/`.
 
-
 ### What Each Process Does
 
 The workflow contains the following processes in [pipeline.nf](./pipeline.nf):
@@ -134,7 +131,6 @@ nextflow run pipeline.nf -profile slurm
 
 Before using the SLURM profile, update the `slurm` block in [nextflow.config](./nextflow.config):
 
-- set `process.conda` to a Conda or micromamba environment path visible on compute nodes;
 - set `process.queue` to the partition name used on your cluster;
 - replace `--account=<your_account>` with the correct SLURM account string for your project;
 - add any other configuration necessary for that particular cluster environment.
@@ -158,8 +154,7 @@ nextflow run pipeline.nf -profile slurm_zhaw
 
 Before using the SLURM profile, update the `slurm_zhaw` block in [nextflow.config](./nextflow.config):
 
-- set `process.conda` to a Conda environment path visible on compute nodes;
-- asjust the time and memory constraints as needed.
+- adjust the time and memory constraints as needed.
 
 ## Running The Snakemake Pipeline
 
@@ -171,29 +166,14 @@ This folder also includes a Snakemake version of the workflow in [Snakefile](./S
 Run a dry-run:
 
 ```bash
-snakemake -n -s Snakefile --software-deployment-method conda --conda-prefix .snakemake/conda
+snakemake -n -s Snakefile --use-conda
 ```
 
 Run the workflow:
 
 ```bash
-snakemake -s Snakefile -j 4 --software-deployment-method conda --conda-prefix .snakemake/conda
+snakemake -s Snakefile -j 4 --use-conda
 ```
-
-Optional overrides:
-
-```bash
-snakemake -s Snakefile -j 4 \
-    --software-deployment-method conda \
-    --conda-prefix .snakemake/conda \
-    --config input='data/*.fasta' outdir='results' conda_env='environment.yml'
-```
-
-Notes:
-
-- Snakemake cannot reuse an existing conda environment directly; `--conda-prefix .snakemake/conda` tells it where to store and cache the environment it builds from `environment.yml`;
-- if you are on an older Snakemake release, replace `--software-deployment-method conda` with `--use-conda`;
-- Snakemake creates the conda environment once per environment file hash and then reuses it on subsequent runs.
 
 ### What Each Rule Does
 
