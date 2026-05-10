@@ -56,7 +56,17 @@ data/
 └── example2.fasta
 ```
 
-## Run The Pipeline
+## Running The Pipeline
+
+Expected behaviour:
+
+- each FASTA file is cleaned first;
+- PRANK and MAFFT run in parallel on the cleaned FASTA;
+- each alignment is passed to RAxML-NG and to BEAST XML generation;
+- BEAST runs once per generated XML file;
+- Nextflow writes execution reports under `results/pipeline_info/`.
+
+### Run Locally
 
 Run the workflow with the default settings:
 
@@ -78,6 +88,8 @@ Resume a previous run:
 nextflow run pipeline.nf -resume
 ```
 
+### Run on a SLURM Cluster
+
 Run on a SLURM cluster with the `slurm` profile:
 
 ```bash
@@ -88,15 +100,31 @@ Before using the SLURM profile, update the `slurm` block in [nextflow.config](./
 
 - set `process.conda` to a Conda or micromamba environment path visible on compute nodes;
 - set `process.queue` to the partition name used on your cluster;
-- replace `--account=<your_account>` with the correct SLURM account string for your project.
+- replace `--account=<your_account>` with the correct SLURM account string for your project;
+- add any other configuration necessary for that particular cluster environment.
 
-Expected behavior:
 
-- each FASTA file is cleaned first;
-- PRANK and MAFFT run in parallel on the cleaned FASTA;
-- each alignment is passed to RAxML-NG and to BEAST XML generation;
-- BEAST runs once per generated XML file;
-- Nextflow writes execution reports under `results/pipeline_info/`.
+### Run on the ZHAW SLURM Cluster
+
+You will need to load the JDK and conda modules before running nextflow:
+
+```bash
+module purge
+module load DefaultModules USS/2022 gcc/9.4.0-pe5.34 jdk/19
+module load miniconda3/4.12.0 lsfm-init-miniconda/1.0.0
+```
+
+Run on the ZHAW SLURM cluster with the `slurm_zhaw` profile:
+
+```bash
+nextflow run pipeline.nf -profile slurm_zhaw
+```
+
+Before using the SLURM profile, update the `slurm_zhaw` block in [nextflow.config](./nextflow.config):
+
+- set `process.conda` to a Conda environment path visible on compute nodes;
+- asjust the time and memory constraints as needed.
+
 
 ## Pipeline Outputs
 
