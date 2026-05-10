@@ -13,30 +13,19 @@ The main workflow is [pipeline.nf](pipeline.nf). It:
 ## Requirements
 
 - Nextflow 25+;
-- micromamba or mamba;
-- the Conda environment described in [environment.yml](./environment.yml);
+- Snakemake;
+- conda or miniconda;
 - input FASTA files in [data](./data).
 
-## Project Setup With `mamba`
+## Project Setup With `conda`
 
-The local `standard` profile in [nextflow.config](./nextflow.config) expects a Conda environment at:
-
-```bash
-/Users/pece/.local/share/mamba/envs/polyketide_analysis
-```
-
-Create that environment from the provided file:
+Create the Conda environment inside the project folder so both Nextflow and Snakemake can share it:
 
 ```bash
-# from this folder
-mamba env create -p /Users/pece/.local/share/mamba/envs/polyketide_analysis -f environment.yml
+conda env create -p .env -f environment.yml
 ```
 
-If the environment already exists, update it with:
-
-```bash
-mamba env update -p /Users/pece/.local/share/mamba/envs/polyketide_analysis -f environment.yml --prune
-```
+The environment is created in `.env/` and reused by both runners without any path customisation.
 
 ## Input Data
 
@@ -52,11 +41,42 @@ Example input layout:
 
 ```text
 data/
-├── example1.fasta
-└── example2.fasta
+├── DNA_example.fasta
+└── protein_example.fasta
 ```
 
-## Running The Pipeline
+## Pipeline Outputs
+
+Both nextflow and snakemake workflows publishes results under `toolname_results/` by default:
+
+```text
+toolname_results/
+├── cleaned_fasta/
+├── prank/
+├── mafft/
+├── raxml/
+├── beast_xml/
+├── beast/
+└── pipeline_info/
+```
+
+For one input file `example.fasta`, the expected main outputs are:
+
+- `toolname_results/cleaned_fasta/example.clean.fasta`
+- `toolname_results/prank/example.clean.prank.fasta`
+- `toolname_results/mafft/example.clean.mafft.fasta`
+- `toolname_results/raxml/example.clean.prank.raxml.*`
+- `toolname_results/raxml/example.clean.mafft.raxml.*`
+- `toolname_results/beast_xml/example.clean.prank.xml`
+- `toolname_results/beast_xml/example.clean.mafft.xml`
+- `toolname_results/beast/example.clean.prank.log`
+- `toolname_results/beast/example.clean.prank.trees`
+- `toolname_results/beast/example.clean.prank.xml.state`
+- `toolname_results/beast/example.clean.mafft.log`
+- `toolname_results/beast/example.clean.mafft.trees`
+- `toolname_results/beast/example.clean.mafft.xml.state`
+
+## The Nextflow Pipeline
 
 Expected behaviour:
 
@@ -65,6 +85,22 @@ Expected behaviour:
 - each alignment is passed to RAxML-NG and to BEAST XML generation;
 - BEAST runs once per generated XML file;
 - Nextflow writes execution reports under `results/pipeline_info/`.
+
+
+### What Each Process Does
+
+The workflow contains the following processes in [pipeline.nf](./pipeline.nf):
+
+- `preprocess_fasta`: removes `['` and `']` artifacts from each input FASTA.
+- `align_prank`: runs `prank -d=<input> -o=<prefix> -F` and renames the `.best.fas` output.
+- `align_mafft`: runs `mafft --auto <input>`.
+- `run_raxml_ng`: runs `raxml-ng-2 --msa <alignment> ... --prefix <name>`.
+- `generate_beast_xml`: runs [scripts/beast_configuration.py](./scripts/beast_configuration.py) to create a BEAST XML file.
+- `run_beast`: runs `beast -threads <cpus> -overwrite <xml>`.
+
+### Additional Outputs
+
+The current version of the nexflow pipeline also generates an additional output folder under the results folder called `pipeline_info`, which contains HTML reports on the pipeline execution.
 
 ### Run Locally
 
@@ -125,54 +161,57 @@ Before using the SLURM profile, update the `slurm_zhaw` block in [nextflow.confi
 - set `process.conda` to a Conda environment path visible on compute nodes;
 - asjust the time and memory constraints as needed.
 
+## Running The Snakemake Pipeline
 
-## Pipeline Outputs
+This folder also includes a Snakemake version of the workflow in [Snakefile](./Snakefile) and you will need Snakemake to run it.
 
-The workflow publishes results under `results/` by default:
 
-```text
-results/
-├── cleaned_fasta/
-├── prank/
-├── mafft/
-├── raxml/
-├── beast_xml/
-├── beast/
-└── pipeline_info/
+### Run locally
+
+Run a dry-run:
+
+```bash
+snakemake -n -s Snakefile --software-deployment-method conda --conda-prefix .snakemake/conda
 ```
 
-For one input file `example.fasta`, the expected main outputs are:
+Run the workflow:
 
-- `results/cleaned_fasta/example.clean.fasta`
-- `results/prank/example.clean.prank.fasta`
-- `results/mafft/example.clean.mafft.fasta`
-- `results/raxml/example.clean.prank.raxml.*`
-- `results/raxml/example.clean.mafft.raxml.*`
-- `results/beast_xml/example.clean.prank.xml`
-- `results/beast_xml/example.clean.mafft.xml`
-- `results/beast/example.clean.prank.log`
-- `results/beast/example.clean.prank.trees`
-- `results/beast/example.clean.prank.xml.state`
-- `results/beast/example.clean.mafft.log`
-- `results/beast/example.clean.mafft.trees`
-- `results/beast/example.clean.mafft.xml.state`
+```bash
+snakemake -s Snakefile -j 4 --software-deployment-method conda --conda-prefix .snakemake/conda
+```
 
-## What Each Process Does
+Optional overrides:
 
-The workflow contains the following processes in [pipeline.nf](./pipeline.nf):
+```bash
+snakemake -s Snakefile -j 4 \
+    --software-deployment-method conda \
+    --conda-prefix .snakemake/conda \
+    --config input='data/*.fasta' outdir='results' conda_env='environment.yml'
+```
+
+Notes:
+
+- Snakemake cannot reuse an existing conda environment directly; `--conda-prefix .snakemake/conda` tells it where to store and cache the environment it builds from `environment.yml`;
+- if you are on an older Snakemake release, replace `--software-deployment-method conda` with `--use-conda`;
+- Snakemake creates the conda environment once per environment file hash and then reuses it on subsequent runs.
+
+### What Each Rule Does
+
+The workflow contains the following rules in [Snakefile](./Snakefile):
 
 - `preprocess_fasta`: removes `['` and `']` artifacts from each input FASTA.
 - `align_prank`: runs `prank -d=<input> -o=<prefix> -F` and renames the `.best.fas` output.
 - `align_mafft`: runs `mafft --auto <input>`.
 - `run_raxml_ng`: runs `raxml-ng-2 --msa <alignment> ... --prefix <name>`.
 - `generate_beast_xml`: runs [scripts/beast_configuration.py](./scripts/beast_configuration.py) to create a BEAST XML file.
-- `run_beast`: runs `beast -threads <cpus> -overwrite <xml>`.
+- `run_beast`: runs `beast -threads <threads> -overwrite <xml>`.
+
 
 ## DNA vs Protein Naming Convention
 
 The workflow does not inspect sequence characters to decide whether an alignment is nucleotide or amino-acid data. Instead, it uses the file name.
 
-- In [pipeline.nf](./pipeline.nf), `run_raxml_ng` checks `alignment.name.contains('DNA')`.
+- In both pipelines, `run_raxml_ng` checks `alignment.name.contains('DNA')`.
 - If the file name contains `DNA`, the process runs RAxML-NG with `--model DNA`.
 - Otherwise, it assumes the alignment is protein data and runs with `--model AA` plus the configured amino-acid model list.
 
@@ -211,10 +250,6 @@ For each sequence, the generated XML contains a BEAST `<sequence>` element with:
 - `totalcount="4"` for DNA or `totalcount="20"` for protein
 
 The resulting XML is then passed unchanged to `beast -threads <cpus> -overwrite <xml>` in the next process.
-
-## Notes
-
-- The current [nextflow.config](./nextflow.config) defines a local `standard` profile and a `slurm` profile.
 
 ## Authors
 
