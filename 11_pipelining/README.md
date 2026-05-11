@@ -19,6 +19,8 @@ The main workflow is [pipeline.nf](pipeline.nf). It:
 
 ## Pipeline Setup With `conda`
 
+This step is necessary both on a local machine and on a cluster.
+
 Create the Conda environment inside the project folder so that both Nextflow and Snakemake can use it:
 
 ```bash
