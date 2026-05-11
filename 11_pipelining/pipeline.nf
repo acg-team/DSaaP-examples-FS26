@@ -4,7 +4,7 @@ nextflow.enable.dsl = 2
 
 /*
  * This pipeline takes FASTA files, aligns them with PRANK and MAFFT,
- * then runs two tools to infer phylogenies:  RAxML-ng 2.0.3beta with automatic model selection and
+ * then runs two tools to infer phylogenies: RAxML-ng 2.0.3beta with automatic model selection and
  * tree search, and BEAST 2.6.3 for Bayesian phylogenetic analysis.
  */
 
@@ -71,7 +71,7 @@ process run_raxml_ng {
     script:
     def model_args = alignment.name.contains('DNA') ? "--model DNA" : "--model AA --moose-options substitution-models=DCMut,JTT,JTT-DCMut,LG,PMB,Q.pfam,Q.yeast,VT,WAG,PROTGTR"
     """
-    raxml-ng-2 --msa ${alignment} ${model_args} --opt-topology adaptive --prefix ${alignment.baseName}
+    raxml-ng --msa ${alignment} ${model_args} --opt-topology adaptive --prefix ${alignment.baseName}
     """
 }
 

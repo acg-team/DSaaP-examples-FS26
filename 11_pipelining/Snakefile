@@ -129,7 +129,7 @@ rule run_raxml_ng:
     shell:
         """
         mkdir -p {OUTDIR}/raxml
-        raxml-ng-2 --msa {input.alignment} {params.model_args} --opt-topology adaptive --prefix {params.prefix}
+        raxml-ng --msa {input.alignment} {params.model_args} --opt-topology adaptive --prefix {params.prefix}
         """
 
 

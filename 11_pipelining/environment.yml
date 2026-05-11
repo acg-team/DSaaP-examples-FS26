@@ -3,7 +3,6 @@ channels:
   - conda-forge
   - bioconda
   - defaults
-  - junniest
 dependencies:
   - python=3.12
   - dark-matter=5.1.2
@@ -11,4 +10,4 @@ dependencies:
   - mafft=7.526
   - openjdk=8.0.121=zulu8.20.0.5_0
   - beast2=2.6.3=he65b2d3_2
-  - raxml-ng=2.0.0b3=h01edc0c_0
+  - raxml-ng=2.0.1=haec14ce_0
